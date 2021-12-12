@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Member;
-use DB, Log;
+use DB, Log, Auth;
 
 class MemberController extends Controller
 {
@@ -21,7 +21,8 @@ class MemberController extends Controller
                 "last_name" => 'required',
                 "father_name" => 'required',
                 "dob" => 'required|date',
-                "document" => 'required|mime:pdf'
+                "document" => 'required',
+                "phone_number" => 'required'
             ]);
 
             if($request->hasfile('document')) {
@@ -34,7 +35,10 @@ class MemberController extends Controller
             DB::beginTransaction();
             Member::create($data);
             DB::commit();
-            return redirect()->route('members.index')->with('success', 'Member Added Successfully');
+            if(Auth::check())
+                return redirect()->route('members.index')->with('success', 'Member Added Successfully');
+            else 
+                return redirect()->back()->with('success', 'Member Added Successfully');
         }
         catch(\Exception $e) {
             DB::rollback();

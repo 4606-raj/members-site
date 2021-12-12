@@ -17,14 +17,18 @@ use App\Http\Controllers\MemberController;
 Route::get('/', function () {
     return redirect()->route('dashboard');
     // return view('welcome');
-})->middleware('auth');
+});
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
+// Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
+//     return view('dashboard');
+// })->name('dashboard');
+
+Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
-Route::group(['prefix' => '/members', 'middleware' => 'auth'], function () {
-    Route::get('/index', [MemberController::class, 'index'])->name('members.index');
+Route::group(['prefix' => '/members'], function () {
+    Route::get('/index', [MemberController::class, 'index'])->name('members.index')->middleware('auth');
     Route::post('/create', [MemberController::class, 'store'])->name('members.store');
-    Route::get('/download/{memberId}', [MemberController::class, 'documentDownload'])->name('members.download');
+    Route::get('/download/{memberId}', [MemberController::class, 'documentDownload'])->name('members.download')->middleware('auth');
 });
